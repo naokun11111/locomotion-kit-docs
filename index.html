@@ -1,0 +1,479 @@
+<title>Locomotion Kit Manual</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #eef1f3;
+    --surface: #ffffff;
+    --surface-2: #f5f7f9;
+    --ink: #15202a;
+    --ink-soft: #35424e;
+    --muted: #5a6875;
+    --line: #d8e0e6;
+    --line-soft: #e6ecf0;
+    --accent: #9c5716;
+    --accent-bright: #e08b3c;
+    --warn-bg: #fdf3e6;
+    --warn-line: #e0a35c;
+    --ui: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0e151b;
+      --surface: #161f27;
+      --surface-2: #121a21;
+      --ink: #e7edf2;
+      --ink-soft: #c3ced8;
+      --muted: #8c9ca9;
+      --line: #263540;
+      --line-soft: #1e2b34;
+      --accent: #e8a33d;
+      --accent-bright: #e8a33d;
+      --warn-bg: #221a0f;
+      --warn-line: #8a6227;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0e151b;
+    --surface: #161f27;
+    --surface-2: #121a21;
+    --ink: #e7edf2;
+    --ink-soft: #c3ced8;
+    --muted: #8c9ca9;
+    --line: #263540;
+    --line-soft: #1e2b34;
+    --accent: #e8a33d;
+    --accent-bright: #e8a33d;
+    --warn-bg: #221a0f;
+    --warn-line: #8a6227;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--ui);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 0 72px; }
+
+  header.masthead {
+    padding-block: 44px 30px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 34px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .lede { font-size: 18px; color: var(--ink-soft); margin: 0; max-width: 64ch; }
+
+  .layout { display: grid; grid-template-columns: 216px minmax(0, 1fr); gap: 46px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 26px; } }
+
+  nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); padding-top: 4px; }
+  @media (max-width: 900px) {
+    nav.toc { position: static; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  }
+  nav.toc p {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+  }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+  nav.toc a {
+    display: block; padding: 4px 0; color: var(--muted);
+    text-decoration: none; font-size: 14px; border-left: 2px solid transparent; padding-left: 12px;
+  }
+  nav.toc a:hover { color: var(--ink); border-left-color: var(--accent-bright); }
+
+  section { margin-bottom: 52px; scroll-margin-top: 24px; }
+  h2 {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.015em;
+    margin: 0 0 6px; display: flex; gap: 12px; align-items: baseline;
+  }
+  h2 .n { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--accent); }
+  h3 { font-size: 18px; font-weight: 600; margin: 30px 0 8px; letter-spacing: -0.01em; }
+  p { margin: 0 0 14px; max-width: 70ch; }
+  ul, ol.steps { max-width: 70ch; padding-left: 22px; margin: 0 0 14px; }
+  li { margin-bottom: 7px; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: 0.875em;
+    background: var(--surface-2); border: 1px solid var(--line-soft);
+    border-radius: 4px; padding: 1px 5px;
+  }
+
+  .tablewrap { overflow-x: auto; margin: 0 0 18px; }
+  table { border-collapse: collapse; width: 100%; min-width: 440px; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td:first-child { white-space: nowrap; padding-right: 26px; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .note {
+    border-left: 3px solid var(--warn-line);
+    background: var(--warn-bg);
+    padding: 13px 16px; border-radius: 0 8px 8px 0;
+    margin: 0 0 18px; max-width: 70ch;
+  }
+  .note p:last-child { margin-bottom: 0; }
+
+  .panel {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px 20px; margin: 0 0 18px;
+  }
+  .panel h3 { margin-top: 0; }
+
+  .measured { display: grid; gap: 2px; font-family: var(--mono); font-size: 14px; }
+  .measured div { display: flex; justify-content: space-between; gap: 18px; padding: 5px 0; border-bottom: 1px solid var(--line-soft); }
+  .measured span:last-child { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 22px; color: var(--muted); font-size: 14px; }
+  kbd {
+    font-family: var(--mono); font-size: 0.85em;
+    border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 5px; padding: 1px 6px; background: var(--surface);
+  }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <p class="eyebrow">Unreal Engine 5.5 &middot; Plugin manual</p>
+    <h1>Dinosaur &amp; Animal Locomotion Kit</h1>
+    <p class="lede">A large animal cannot pivot on the spot. At a given speed its body can only come round
+      so fast, so it walks an arc. This kit gives any Character that arc &mdash; and then draws the arc it
+      actually walked, so you can check it against the one you asked for.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <p>Contents</p>
+      <ol>
+        <li><a href="#start">Before you start</a></li>
+        <li><a href="#creature">Make the creature</a></li>
+        <li><a href="#animations">Give it animations</a></li>
+        <li><a href="#play">Play it</a></li>
+        <li><a href="#tuning">Tuning how it moves</a></li>
+        <li><a href="#debug">Seeing the radius</a></li>
+        <li><a href="#crouch">Crouching</a></li>
+        <li><a href="#script">From script</a></li>
+        <li><a href="#multiplayer">Multiplayer</a></li>
+        <li><a href="#trouble">When something is wrong</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="start">
+        <h2><span class="n">01</span> Before you start</h2>
+        <p>Everything here is in centimetres, centimetres per second and degrees per second &mdash; the units
+          the engine itself uses, so a speed you read here is the speed the Character Movement Component runs
+          at. No conversion, no arbitrary &ldquo;strength&rdquo; dials.</p>
+
+        <div class="tablewrap">
+          <table>
+            <tr><td>Engine</td><td>Unreal Engine 5.5</td></tr>
+            <tr><td>Source</td><td>Full C++, Blueprint-exposed. One Runtime module, no editor-only dependency.</td></tr>
+            <tr><td>Animation</td><td>No Animation Blueprint required. Use your own if you prefer.</td></tr>
+            <tr><td>Content</td><td>Input Action assets only.</td></tr>
+          </table>
+        </div>
+
+        <div class="note">
+          <p><strong>The kit ships with no character content.</strong> No meshes, no animations, no creature.
+            You point it at your own Skeletal Mesh and your own clips. Anything you see in the store video or
+            images is a separate asset and is not included.</p>
+        </div>
+      </section>
+
+      <section id="creature">
+        <h2><span class="n">02</span> Make the creature</h2>
+        <ol class="steps">
+          <li><strong>Blueprint &rarr; Blueprint Class &rarr;</strong> search <code>CreatureCharacter</code>.
+            Name it after your animal.</li>
+          <li>Open it, select the <strong>Mesh</strong> component, assign your Skeletal Mesh.</li>
+          <li>Select the creature (the top row of the Components list, or Class Defaults) and <strong>tick
+            Auto Configure From Skeletal Mesh</strong>, in the <strong>Creature&nbsp;|&nbsp;Setup</strong>
+            category. It runs at once and unticks itself. Then <strong>Compile</strong> and <strong>Save</strong>.</li>
+          <li>Read <strong>Last Auto Setup Report</strong>, just below it. It lists every guess and everything
+            it could not work out. A wrong guess is fixed by typing over the field it guessed.</li>
+        </ol>
+
+        <div class="note">
+          <p><strong>Why a tick box and not a button?</strong> Unreal&rsquo;s &ldquo;Call In Editor&rdquo;
+            buttons do nothing inside the Blueprint editor: the engine drops class defaults from the
+            button&rsquo;s list of objects to run on, then runs the function only if that list is not empty.
+            The button draws, the click is accepted, nothing happens, and nothing is logged. A property has no
+            such limit.</p>
+        </div>
+
+        <h3>What it reads</h3>
+        <p>Leg chains, the head/neck aim chain, the capsule, the crouched capsule height, and which way the
+          mesh faces. It understands UE Mannequin (<code>thigh_l</code>), Mixamo (<code>LeftUpLeg</code>),
+          Rigify (<code>thigh.L</code>), 3ds Max Biped, <code>L_Thigh</code> prefixes, and the numbered limb
+          chains creature packs use &mdash; <code>LLeg1 / LLeg2 / LLeg3</code>, with <code>F_LLeg1</code> for
+          forelimbs.</p>
+        <p><strong>On a quadruped all four limbs become legs; on a biped whose arms are named the same way,
+          they do not.</strong> A limb counts as a leg only if its tip sits near the ground in the reference
+          pose &mdash; the only thing that separates a foreleg from an arm when the rigger called both
+          &ldquo;Leg&rdquo;.</p>
+
+        <h3>The capsule comes from the creature&rsquo;s width</h3>
+        <p>A capsule is a cross-section, not a plan view, so the radius is the <strong>narrower</strong> of the
+          two horizontal half-extents. Taking the longer one would give a 13-metre animal a capsule 13 metres
+          across.</p>
+        <div class="panel">
+          <h3 style="font-size:15px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)">A real quadruped, measured</h3>
+          <div class="measured">
+            <div><span>Mesh half-extents</span><span>X 126 &middot; Y 648 &middot; Z 235 cm</span></div>
+            <div><span>Capsule radius</span><span>126 cm</span></div>
+            <div><span>Capsule half height</span><span>235 cm &mdash; it stands 4.7 m</span></div>
+            <div><span>Crouched half height</span><span>129 cm &mdash; it crouches to 2.6 m</span></div>
+            <div><span>Legs found</span><span>4</span></div>
+          </div>
+        </div>
+        <div class="note">
+          <p><strong>The engine cannot make a capsule shorter than it is wide.</strong> Crouched Half Height is
+            clamped up to the radius. If crouching does not shrink your creature, compare those two numbers
+            first.</p>
+        </div>
+      </section>
+
+      <section id="animations">
+        <h2><span class="n">03</span> Give it animations</h2>
+        <p>Auto Configure creates an empty <strong>Creature Motion Data</strong>. Empty is the default on
+          purpose. <strong>Until you fill it in, the creature does not animate at all.</strong></p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Field</th><th>What goes in it</th><th>Needed?</th></tr></thead>
+            <tbody>
+              <tr><td>Idle Anim</td><td>Standing still, looping</td><td>yes</td></tr>
+              <tr><td>Locomotion Blend Space</td><td>Walking / running, driven by speed</td><td>for walking</td></tr>
+              <tr><td>Turn Left / Right 90</td><td>Stepping round on the spot, looping, <strong>no root rotation</strong></td><td>for turn in place</td></tr>
+              <tr><td>Turn Left / Right 180</td><td>The same, for big turns</td><td>optional</td></tr>
+              <tr><td>Crouch Idle Anim</td><td>Crouched or lying down, looping</td><td>for crouching</td></tr>
+              <tr><td>Crouch Start / End</td><td>Going down and getting up, played once</td><td>recommended</td></tr>
+              <tr><td>Crouch Blend Space</td><td>Crouched movement by speed</td><td>optional</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The blend space axes are fixed</h3>
+        <p>The kit cannot ask a blend space what its axes mean, so it states them instead:</p>
+        <ul>
+          <li><strong>X = turn rate</strong>, degrees per second (negative is left)</li>
+          <li><strong>Y = ground speed</strong>, centimetres per second &mdash; the same numbers as Walk,
+            Trot and Run Speed</li>
+        </ul>
+        <p>With the defaults that means <code>Walk</code> at Y&nbsp;=&nbsp;206, <code>Trot</code> at
+          Y&nbsp;=&nbsp;384 and <code>Run</code> at Y&nbsp;=&nbsp;700.</p>
+        <div class="note">
+          <p><strong>You do not need a sample at zero speed.</strong> Below the slowest sample your blend
+            space actually has, the kit fades the Idle Anim back in, so a creature standing still is not left
+            walking on the spot.</p>
+        </div>
+
+        <h3>Take the in-place clips</h3>
+        <p>Where a pack offers both, use the <code>_InPlace</code> variants. The others move the root, and the
+          kit is already moving the creature &mdash; using them makes it travel further than it appears to and
+          the feet slide.</p>
+
+        <h3>Point the mesh at it</h3>
+        <p><strong>Mesh &rarr; Animation &rarr; Anim Class &rarr; <code>CreatureAnimInstance</code>.</strong>
+          That is the whole animation setup: idle, the locomotion blend space by speed, turn in place with the
+          step clips, and the crouch pose, built in C++. No Anim Graph, no state machine, nothing to wire.</p>
+        <p>Prefer your own Animation Blueprint? Either make it a child of <code>CreatureAnimInstance</code> and
+          <strong>untick Use Native Pose</strong> &mdash; every value is then a variable in your graph &mdash;
+          or keep any plain Anim Blueprint and read the component:
+          <code>Try Get Pawn Owner</code> &rarr; <code>Cast To CreatureCharacter</code> &rarr;
+          <code>Turn In Place</code>.</p>
+        <div class="note">
+          <p><strong>If you leave Use Native Pose ticked, your Anim Graph is ignored</strong> &mdash; the C++
+            pose is used instead, and your blend space appears to do nothing.</p>
+        </div>
+      </section>
+
+      <section id="play">
+        <h2><span class="n">04</span> Play it</h2>
+        <p>The creature is a normal <code>ACharacter</code>: set <strong>World Settings &rarr; Game Mode
+          Override</strong> and its <strong>Default Pawn Class</strong> to your Blueprint, drop a Player
+          Start, press Play.</p>
+        <div class="tablewrap">
+          <table>
+            <tbody>
+              <tr><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></td><td>Move</td></tr>
+              <tr><td>Mouse</td><td>Look &mdash; the body turns to follow</td></tr>
+              <tr><td><kbd>Left Shift</kbd></td><td>Run, while held</td></tr>
+              <tr><td><kbd>C</kbd></td><td>Walk / trot toggle</td></tr>
+              <tr><td><kbd>Left Ctrl</kbd></td><td>Crouch, press again to stand</td></tr>
+              <tr><td>Right Mouse</td><td>Free look &mdash; the body stops following the camera</td></tr>
+              <tr><td>Left Mouse</td><td>Attack</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note">
+          <p><strong>Spawned by a Game Mode?</strong> Then settings ticked on a creature <em>placed in the
+            level</em> never reach the one you play &mdash; a spawned pawn is built from the Blueprint. Tick
+            things on the Blueprint, and Compile.</p>
+        </div>
+      </section>
+
+      <section id="tuning">
+        <h2><span class="n">05</span> Tuning how it moves</h2>
+        <p>All of it lives in one struct, which appears twice: on the <strong>Motion Data</strong> asset
+          (shared by every creature using it) and on <strong>Turn In Place &rarr; Locomotion Override</strong>
+          on the creature itself. <strong>Only one is live at a time</strong> &mdash; if Override Locomotion is
+          ticked, the creature&rsquo;s own values win. <strong>Live Locomotion Source</strong> says which is in
+          effect right now and what its numbers are. Read it before wondering why an edit did nothing.</p>
+
+        <h3>Speeds</h3>
+        <div class="tablewrap">
+          <table>
+            <tbody>
+              <tr><td>Walk Speed</td><td class="num">206 cm/s</td><td>default</td></tr>
+              <tr><td>Trot Speed</td><td class="num">384 cm/s</td><td>the gait used when no key is held</td></tr>
+              <tr><td>Run Speed</td><td class="num">700 cm/s</td><td>while Shift is held</td></tr>
+              <tr><td>Crouch Speed</td><td class="num">90 cm/s</td><td>a cap, not a gait</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Turning radius</h3>
+        <p>Moving at speed <code>v</code> with radius <code>R</code>, the body turns at most
+          <code>v / R</code> radians per second, so it walks an arc.</p>
+        <ul>
+          <li><code>Turn Radius When Walking</code> (600 cm) applies <strong>exactly at Walk Speed</strong>.</li>
+          <li><code>Turn Radius When Running</code> (2000 cm) applies at Run Speed and above.</li>
+          <li><strong>Every speed between is blended between those two</strong> &mdash; including Trot, the
+            default gait. A tight walk radius with a wide run radius still gives a wide turn at trot.</li>
+          <li>Tick <strong>Use Trot Turn Radius</strong> to give Trot its own value, so trot can be tight while
+            run stays wide.</li>
+        </ul>
+        <p>Turning in place is a <strong>separate branch that does not use the turning radius at all</strong>
+          &mdash; it uses <code>Turn Rate Deg Per Sec</code>.</p>
+
+        <h3>Animation smoothing</h3>
+        <p><code>Animation Smoothing</code> (0.15 s) eases what the blend space is asked for when speed or turn
+          rate changes sharply. It smooths the animation only; the creature&rsquo;s movement is untouched. Too
+          much of it and the legs lag behind the real speed and the feet slide.</p>
+      </section>
+
+      <section id="debug">
+        <h2><span class="n">06</span> Seeing the radius</h2>
+        <p>Judging whether a radius is &ldquo;working&rdquo; by the feel of a turn is hopeless, so the kit
+          draws it. Tick <strong>Turn In Place &rarr; Show Turn Radius Debug</strong>, or type
+          <code>creature.DrawTurnRadius 1</code> in the console while playing. From a Blueprint,
+          <strong>Toggle Turn Radius Debug For All Creatures</strong> needs no target and can go on a key.</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Drawn</th><th>Means</th></tr></thead>
+            <tbody>
+              <tr><td>Bright circle</td><td>the radius in force <strong>at the current speed</strong>, on the side it is turning toward</td></tr>
+              <tr><td>Dim circle</td><td>the same radius, other side</td></tr>
+              <tr><td>Cyan line</td><td>the path it has actually walked</td></tr>
+              <tr><td>Yellow circle</td><td>a circle fitted to that path &mdash; <strong>the radius it really turned at</strong></td></tr>
+              <tr><td>Arrows</td><td>body heading, and where it is being asked to point</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>If the two circles are the same size, the radius is doing exactly what it was set to. If the fitted
+          one is wider, something else is the limit &mdash; and the on-screen readout names it, including the
+          commonest case: the creature is turning in place, where the radius is not used.</p>
+        <p>With the game stopped, the same tick box previews each gait&rsquo;s radius in the editor viewport
+          (green walk, blue trot, orange run). <code>creature.TurnRadiusDebugReport</code> prints the whole
+          state &mdash; what is switched on, which creature, and whether anything is being drawn at all.</p>
+      </section>
+
+      <section id="crouch">
+        <h2><span class="n">07</span> Crouching</h2>
+        <p><kbd>Left Ctrl</kbd>, or <code>Set Crouching</code> / <code>Toggle Crouch</code> from Blueprint. The
+          kit drives the <strong>engine&rsquo;s own crouch</strong>: shrunken capsule, correct replication, and
+          the behaviour people forget &mdash; <strong>a creature under something low cannot stand up</strong>,
+          and <code>Is Crouched</code> stays true until there is room.</p>
+        <div class="note">
+          <p><strong>What crouching changes is the collision and the speed. What it looks like is your
+            animation.</strong> With no crouch clips assigned, a crouched creature keeps playing its idle: the
+            capsule is half the height and the speed is capped, but it is still standing up in the picture.
+            That is the crouch waiting for a clip, not a fault. The feet stay on the ground throughout rather
+            than sinking with the capsule.</p>
+        </div>
+        <ul>
+          <li><code>Crouch Start / End Anim</code> &mdash; played once, in full, at their own speed: a
+            four-second lie-down takes four seconds. Without them the crouch can only cross-fade between two
+            still poses, and that reads as the creature sinking into the floor.</li>
+          <li><code>Crouch Blend Seconds</code> (0.5 s) &mdash; the cross-fade onto and off those clips. The
+            kit hands over across the last of it, because the final frame of a lie-down and the first frame of
+            a lying-down loop are almost never the same pose.</li>
+          <li><code>Crouch Is Toggle</code> &mdash; press to crouch and again to stand (default), or untick for
+            hold-to-crouch.</li>
+        </ul>
+      </section>
+
+      <section id="script">
+        <h2><span class="n">08</span> Setting up from script</h2>
+        <p>Auto Configure is also a plain function, <code>AutoConfigureFromSkeletalMesh</code>, callable from
+          Blueprint, C++ and editor Python. It <strong>returns</strong> the same report it stores, so a script
+          can set up a whole pack of creatures and print what each one guessed.</p>
+        <div class="note">
+          <p>A script must <strong>compile the Blueprint</strong> afterwards, exactly as you would press
+            Compile by hand, or the values never reach the saved asset.</p>
+        </div>
+      </section>
+
+      <section id="multiplayer">
+        <h2><span class="n">09</span> Multiplayer</h2>
+        <p>Movement and rotation replicate the way any Character does. The turn state and the crouch replicate
+          too, so other players see the right animation. The owning client turns immediately and tells the
+          server its desired heading; the server runs the same turn from the same settings.</p>
+      </section>
+
+      <section id="trouble">
+        <h2><span class="n">10</span> When something is wrong</h2>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>What you see</th><th>What it almost always is</th></tr></thead>
+            <tbody>
+              <tr><td>Nothing animates</td><td>Motion Data is empty, or not assigned to Turn In Place, or the mesh&rsquo;s Anim Class is empty</td></tr>
+              <tr><td>Nothing animates, own Anim BP</td><td>the mesh points at a <em>different</em> Anim Blueprint than the one you are editing</td></tr>
+              <tr><td>Your Anim Graph is ignored</td><td>it is a child of <code>CreatureAnimInstance</code> with Use Native Pose still ticked</td></tr>
+              <tr><td>Ticking Auto Configure changed nothing</td><td>look at the capsule, not the panel. Still 34&times;88 means it did not run &mdash; check the Mesh has a Skeletal Mesh</td></tr>
+              <tr><td>It worked, then the numbers came back</td><td>the Blueprint was not compiled</td></tr>
+              <tr><td>Crouch reports true, capsule never shrinks</td><td>the radius is as large as the half height; the engine clamps the crouched height up to it</td></tr>
+              <tr><td>Zero legs on something with legs</td><td>the report says what it looked for; fill Ground Adaptation &rarr; Legs in by hand</td></tr>
+              <tr><td>It walks on the spot while standing</td><td>no blend space sample slow enough, and no Idle Anim to fall back to</td></tr>
+              <tr><td>A Turn Radius edit changes nothing</td><td>the other source is live (read Live Locomotion Source), or it is turning in place, or Trot is blending toward a wide run radius</td></tr>
+              <tr><td>The debug draw shows nothing</td><td>ticked on a different copy than the one being played &mdash; use the console command, or tick it on the Blueprint and Compile</td></tr>
+              <tr><td>Crouch does nothing</td><td><code>Can Crouch</code> is off on the Character Movement component</td></tr>
+              <tr><td>The creature faces sideways</td><td>set <strong>Mesh Forward Axis</strong> by hand, which also switches off the auto-guess</td></tr>
+              <tr><td>A Call In Editor <em>button</em> does nothing</td><td>Unreal runs those only on a creature placed in a level, never from the Blueprint editor</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <p>Dinosaur &amp; Animal Locomotion Kit &mdash; Unreal Engine 5.5. Creature models and animations in
+          the store video and images are separate assets and are not included in this plugin.</p>
+      </footer>
+    </main>
+  </div>
+</div>
