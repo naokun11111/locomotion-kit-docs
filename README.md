@@ -1,7 +1,7 @@
 # Dinosaur & Animal Locomotion Kit — documentation
 
 Documentation for the **Dinosaur & Animal Locomotion Kit**, a locomotion plugin for
-Unreal Engine 5.5.
+Unreal Engine 5.5 and 5.8.
 
 **Read it here: https://naokun11111.github.io/locomotion-kit-docs/**
 
